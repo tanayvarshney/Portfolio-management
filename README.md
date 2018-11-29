@@ -7,5 +7,6 @@ Details of the above are covered in "Readme_original.md"
 
 Changelogs:
 
-Fixed bugs in ddpg agent.
-Added Kalman filter to smoothen out the input
+Fixed bugs in ddpg agent.<br>
+Added Kalman filter to smoothen out the input<b>
+Explored the possibility to add news data into prediction
