@@ -3,8 +3,11 @@
 ## Introduction
 
 Motivated by "A Deep Reinforcement Learning Framework for the Financial Portfolio Management Problem" by [Jiang et. al. 2017](https://arxiv.org/abs/1706.10059) [1]. In this project:
-+ Implement two state-of-art continous deep reinforcement learning algorithms, Deep Deterministic Policy Gradient (DDPG) and Proximal Policy Optimization(PPO) in portfolio management. 
++ Implement three state-of-art continous deep reinforcement learning algorithms, Deep Deterministic Policy Gradient (DDPG),Proximal Policy Optimization(PPO) and Policy Gradient (PG) in portfolio management. 
+
 + Experiments on different settings, such as changing learning rates, optimizers, neutral network structures, China/America Stock data, initializers, noise, features to figure out their influence on the RL agents' performance(cumulative return).
+
+  In this paper, we implement three state-of-art continuous reinforcement learning algorithms, Deep Deterministic Policy Gradient (DDPG), Proximal Policy Optimization (PPO) and Policy Gradient (PG)in portfolio management. All of them are widely-used in game playing and robot control. What's more, PPO has appealing theoretical propeties which is hopefully potential in portfolio management. We present the performances of them under different settings, including different learning rates, objective functions, feature combinations, in order to provide insights for parameters tuning, features selection and data preparation. We also conduct intensive experiments in China Stock market and show that PG is more desirable in financial market than DDPG and PPO, although both of them are more advanced. What's more, we propose a so called Adversarial Training method and show that it can greatly improve the training efficiency and significantly promote average daily return and sharpe ratio in back test. Based on this new modification, our experiments results show that our agent based on Policy Gradient can outperform UCRP.
 ## Using the environment
 
 The environment provides supports for easily testing different reinforcement learning in portfolio management.
@@ -62,16 +65,24 @@ python main.py --mode=test
 ## Result
 + Training data (USA)
   ![USA](result/USA.png)
+
 + Training data (China)
   ![China](result/China.png)
 
-+ Backtest (USA)
-  ![backtest_USA](result/backtest_USA.png)
++ Adversarial Training
+
+  ![noise](result/noise.png)
+
++ Backtest (China)
+  ![Final](result/Final.png)
+
+  ![56](result/56.png)
 
 + APV under different feature combinations
   ![features_reward](result/features_reward.png)
 
-**The other results can be found in our report.**(https://arxiv.org/abs/1808.09940).
+**The other results can be found in our paper.**
+(http://arxiv.org/abs/1808.09940)
 
 
 
@@ -82,9 +93,9 @@ python main.py --mode=test
 ### Contributors
 
 * ***Zhipeng Liang***
-* ***Kangkang Jiang***
 * ***Hao Chen***
 * ***Junhao Zhu***
+* ***Kangkang Jiang***
 * ***Yanran Li***
 ### Institutions
 
@@ -111,7 +122,7 @@ Modules needed
 ## Contact
 
 + liangzhp6@mail2.sysu.edu.cn
-+ jiangkk3@mail2.sysu.edu.cn
-+ chenhao348@mail2.sysu.edu.cn
++ chenhao8@mail2.sysu.edu.cn
 + zhujh25@mail2.sysu.edu.cn
++ jiangkk3@mail2.sysu.edu.cn
 + liyr8@mail2.sysu.edu.cn
