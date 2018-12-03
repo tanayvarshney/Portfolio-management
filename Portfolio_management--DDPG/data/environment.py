@@ -28,7 +28,7 @@ class Environment:
         return Kc
     def __init__(self,start_date,end_date,codes,features,window_length,market,mode):
         #,test_data,assets_list,M,L,N,start_date,end_date
-
+        self.features = features
         #preprocess parameters
         self.cost=0.0025
 
@@ -95,31 +95,6 @@ class Environment:
             if 'open' in features:
                 asset_dict[str(asset)]['open']=asset_dict[str(asset)]['open']/base_price
 
-            if 'PE' in features:
-                asset_data['PE']=asset_data['PE'].fillna(method='pad')
-                base_PE=asset_data.ix[end_date,'PE']
-                asset_dict[str(asset)]['PE'] = asset_dict[str(asset)]['PE'] / base_PE
-
-            if 'PB' in features:
-                asset_data['PB'] = asset_data['PB'].fillna(method='pad')
-                base_PB=asset_data.ix[end_date,'PB']
-                asset_dict[str(asset)]['PB'] = asset_dict[str(asset)]['PB'] / base_PB
-
-            if 'TR'in features:
-                asset_data['TR'] = asset_data['TR'].fillna(method='pad')
-                base_TR=asset_data.ix[end_date,'TR']
-
-            if 'TV1' in features:
-                base_TV1=asset_data.ix[end_date,'TV1']
-                asset_dict[str(asset)]['TV1'] = asset_dict[str(asset)]['TV1'] / base_TV1
-
-            if 'TV2' in features:
-                base_TV2=asset_data.ix[end_date,'TV2']
-                asset_dict[str(asset)]['TV2'] = asset_dict[str(asset)]['TV2'] / base_TV2
-
-            if 'TR' in features:
-                base_TR=asset_data.ix[end_date,'TR']
-                asset_dict[str(asset)]['TR'] = asset_dict[str(asset)]['TR'] / base_TR
 
             asset_data=asset_data.fillna(method='bfill',axis=1)
             asset_data=asset_data.fillna(method='ffill',axis=1)#根据收盘价填充其他值
@@ -142,18 +117,6 @@ class Environment:
                 V_open=np.ones(self.L)
             if 'low' in features:
                 V_low=np.ones(self.L)
-            if 'TV1' in features:
-                V_TV1=np.ones(self.L)
-            if 'TV2' in features:
-                V_TV2=np.ones(self.L)
-            if 'DA' in features:
-                V_DA=np.ones(self.L)
-            if 'TR' in features:
-                V_TR=np.ones(self.L)
-            if 'PE' in features:
-                V_PE=np.ones(self.L)
-            if 'PB' in features:
-                V_PB=np.ones(self.L)
 
             y=np.ones(1)
             for asset in codes:
@@ -165,18 +128,7 @@ class Environment:
                     V_low=np.vstack((V_low,asset_data.ix[t-self.L-1:t-1,'low']))
                 if 'open' in features:
                     V_open=np.vstack((V_open,asset_data.ix[t-self.L-1:t-1,'open']))
-                if 'TV1' in features:
-                    V_TV1 = np.vstack((V_TV1, asset_data.ix[t - self.L - 1:t - 1, 'TV1']))
-                if 'TV2' in features:
-                    V_TV2 = np.vstack((V_TV2, asset_data.ix[t - self.L - 1:t - 1, 'TV2']))
-                if 'DA' in features:
-                    V_DA = np.vstack((V_DA, asset_data.ix[t - self.L - 1:t - 1, 'DA']))
-                if 'TR' in features:
-                    V_TR=np.vstack((V_TR,asset_data.ix[t-self.L-1:t-1,'TR']))
-                if 'PE' in features:
-                    V_PE=np.vstack((V_PE,asset_data.ix[t-self.L-1:t-1,'PE']))
-                if 'PB' in features:
-                    V_PB=np.vstack((V_PB,asset_data.ix[t-self.L-1:t-1,'PB']))
+
                 y=np.vstack((y,asset_data.ix[t,'close']/asset_data.ix[t-1,'close']))
             state = V_close
             if 'high' in features:
@@ -185,20 +137,10 @@ class Environment:
                 state = np.stack((state,V_low), axis=2)
             if 'open' in features:
                 state = np.stack((state,V_open), axis=2)
-            if 'TV1' in features:
-                state = np.stack((state,V_TV1), axis=2)
-            if 'TV2' in features:
-                state = np.stack((state,V_TV2), axis=2)
-            if 'DA' in features:
-                state = np.stack((state,V_DA), axis=2)
-            if 'TR' in features:
-                state = np.stack((state,V_TR), axis=2)
-            if 'PE' in features:
-                state = np.stack((state,V_PE), axis=2)
-            if 'PB' in features:
-                state = np.stack((state,V_PB), axis=2)
+
             state = state.reshape(1, self.M, self.L, self.N)
             self.states.append(state)
+            
             self.price_history.append(y)
             t=t+1
         self.reset()
@@ -214,11 +156,16 @@ class Environment:
             mu = self.cost * (np.abs(w2[0][1:] - w1[0][1:])).sum()
 
             std = self.states[self.t - 1][0].std(axis=0, ddof=0)
-            w2_std = (w2[0]* std).sum()
+            w2[np.isnan(w2)] = 1.0
+            price[np.isnan(price)] = 1.0
+            w2_std = np.zeros(len(self.features))
+            gamma = [0.99,0.9]
+            for i in range(len(self.features)):
+                a = w2[0].reshape(1,w2[0].shape[0])
+                b = std[:,i].reshape(std[:,i].shape[0],1)
+                w2_std[i] = sum(sum(a*b)) *gamma[i]
 
-            #adding risk
-            gamma=0.99
-            risk=gamma*w2_std
+            risk = np.sum(w2_std)/len(self.features)
 
             r = (np.dot(w2, price)[0] - mu)[0]
 

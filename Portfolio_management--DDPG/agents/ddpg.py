@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """
 Created on Mon Aug  6 08:59:35 2018
-
 @author: Administrator
 """
 import tensorflow as tf
@@ -382,4 +381,3 @@ class DDPG:
             self.summary_vars[3]: actor_loss
         })
         self.summary_writer.add_summary(summary_str, epoch)
-

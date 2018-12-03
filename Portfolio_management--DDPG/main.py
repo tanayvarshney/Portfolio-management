@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from argparse import ArgumentParser
 import json
 import time
@@ -19,7 +17,6 @@ M=0
 
 class StockTrader():
     '''
-
     This is the main controller of the code
     '''
     
@@ -111,7 +108,7 @@ def traversal(stocktrader,agent,env,epoch,noise_flag,framework,method,trainable)
     while contin:
         w2 = agent.predict(s)
         if noise_flag=='True':
-            w2=stocktrader.action_processor(w2,(epochs-epoch)/epochs)
+            w2 = stocktrader.action_processor(w2,(epochs-epoch)/epochs)
         env_info = env.step(w1, w2)
         r, contin, s_next, w1, p,risk = parse_info(env_info)
 
@@ -142,7 +139,6 @@ def traversal(stocktrader,agent,env,epoch,noise_flag,framework,method,trainable)
 def parse_config(config,mode):
     '''
     intitial argument parser and displays the settings while in runtime
-
     '''
 
     codes = config["session"]["codes"]
