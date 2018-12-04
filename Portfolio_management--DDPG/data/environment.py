@@ -42,9 +42,11 @@ class Environment:
         data[features]=data[features].astype(float)
 
         # 生成有效时间
+        print(pd.to_datetime(start_date))
+        print(data.index[1])
         start_date = [date for date in data.index if date > pd.to_datetime(start_date)][0]
         end_date = [date for date in data.index if date < pd.to_datetime(end_date)][-1]
-        data=data[start_date.strftime("%Y-%m-%d"):end_date.strftime("%Y-%m-%d")]
+        #data=data[start_date.strftime("%Y-%m-%d"):end_date.strftime("%Y-%m-%d")]
         #TO DO:REFINE YOUR DATA
         
         if mode == "train":
@@ -94,6 +96,9 @@ class Environment:
 
             if 'open' in features:
                 asset_dict[str(asset)]['open']=asset_dict[str(asset)]['open']/base_price
+            
+            if 'sentimentRange' in features:
+                asset_dict[str(asset)]['sentimentRange']=asset_dict[str(asset)]['sentimentRange']
 
 
             asset_data=asset_data.fillna(method='bfill',axis=1)
@@ -117,6 +122,8 @@ class Environment:
                 V_open=np.ones(self.L)
             if 'low' in features:
                 V_low=np.ones(self.L)
+            if 'sentimentRange' in features:
+                V_sentiment = np.ones(self.L)
 
             y=np.ones(1)
             for asset in codes:
@@ -128,15 +135,21 @@ class Environment:
                     V_low=np.vstack((V_low,asset_data.ix[t-self.L-1:t-1,'low']))
                 if 'open' in features:
                     V_open=np.vstack((V_open,asset_data.ix[t-self.L-1:t-1,'open']))
+                if 'sentimentRange' in features:
+                    V_sentiment=np.vstack((V_sentiment,asset_data.ix[t-self.L-1:t-1,'sentimentRange']))
 
                 y=np.vstack((y,asset_data.ix[t,'close']/asset_data.ix[t-1,'close']))
             state = V_close
+
             if 'high' in features:
                 state = np.stack((state,V_high), axis=2)
             if 'low' in features:
                 state = np.stack((state,V_low), axis=2)
             if 'open' in features:
                 state = np.stack((state,V_open), axis=2)
+            if 'sentimentRange' in features:
+                state = np.stack((state,V_sentiment), axis=2)
+
 
             state = state.reshape(1, self.M, self.L, self.N)
             self.states.append(state)

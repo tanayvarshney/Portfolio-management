@@ -8,9 +8,9 @@
 	"session":{
 		"start_date":"2015-01-05",
 		"end_date":"2017-01-01",
-		"market_types":"America",
+		"market_types":"AmericaWithNewsPred_",
 	    "codes":["AAPL","ADBE","BABA","SNE","V"],
-		"features":["close","high"],
+		"features":["close","sentimentRange"],
 		"agents":["CNN","DDPG","10"],
 		"epochs":"100",
 		"noise_flag":"False",
