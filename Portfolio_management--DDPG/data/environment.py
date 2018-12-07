@@ -50,6 +50,7 @@ class Environment:
         #TO DO:REFINE YOUR DATA
         
         if mode == "train":
+            
             print("applying kalman filter")
             print(data['close'])
             
@@ -169,10 +170,11 @@ class Environment:
             mu = self.cost * (np.abs(w2[0][1:] - w1[0][1:])).sum()
 
             std = self.states[self.t - 1][0].std(axis=0, ddof=0)
-            w2[np.isnan(w2)] = 1.0
-            price[np.isnan(price)] = 1.0
+            w2[np.isnan(w2)] = 0.0
+            price[np.isnan(price)] = 0.0
             w2_std = np.zeros(len(self.features))
-            gamma = [0.99,0.9]
+            #gamma = [0.001,0.5,0.9,0.9]
+            gamma = [0.99,0.99,0.9,0.9]
             for i in range(len(self.features)):
                 a = w2[0].reshape(1,w2[0].shape[0])
                 b = std[:,i].reshape(std[:,i].shape[0],1)

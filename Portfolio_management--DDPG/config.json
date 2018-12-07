@@ -11,13 +11,13 @@
 		"market_types":"AmericaWithNewsPred_",
 	    "codes":["AAPL","ADBE","BABA","SNE","V"],
 		"features":["close","sentimentRange"],
-		"agents":["CNN","DDPG","10"],
+		"agents":["CNN","DDPG","5"],
 		"epochs":"100",
 		"noise_flag":"False",
 		"record_flag":"True",
 		"plot_flag":"False",
 		"reload_flag":"True",
 		"trainable":"True",
-		"method":"model_based"
+		"method":"model_free"
 	}
 }

@@ -5,6 +5,7 @@ import pandas as pd
 import tensorflow as tf
 import numpy as np
 import math
+import pandas as pd
 from decimal import Decimal
 import matplotlib.pyplot as plt
 from agents.ornstein_uhlenbeck import OrnsteinUhlenbeckActionNoise
@@ -78,7 +79,11 @@ class StockTrader():
         '''
         graph plotting: show the results
         '''
-        pd.Series(self.wealth_history).plot()
+        history = pd.Series(self.wealth_history)
+        df = pd.DataFrame()
+        df['history'] = history.values
+        df.to_csv("./results.csv")
+        history.plot()
         plt.xlabel("Days (Starting from Jan 2015)")
         plt.ylabel("Asset Value")
         plt.show()
@@ -119,13 +124,6 @@ def traversal(stocktrader,agent,env,epoch,noise_flag,framework,method,trainable)
             if trainable=="True":
                 agent_info= agent.train(method,epoch)
                 loss, q_value=agent_info["critic_loss"],agent_info["q_value"]
-                if method=='model_based':
-                    actor_loss=agent_info["actor_loss"]
-
-        elif framework=='PPO':
-            if not contin and trainable=="True":
-                agent_info = agent.train(method, epoch)
-                loss, q_value = agent_info["critic_loss"], agent_info["q_value"]
                 if method=='model_based':
                     actor_loss=agent_info["actor_loss"]
 
@@ -194,11 +192,6 @@ def session(config,mode):
         print("*-----------------Loading DDPG Agent---------------------*")
         from agents.ddpg import DDPG
         agent = DDPG(predictor, len(codes) + 1, int(window_length), len(features), '-'.join(agent_config), reload_flag,trainable)
-
-    elif framework == 'PPO':
-        print("*-----------------Loading PPO Agent---------------------*")
-        from agents.ppo import PPO
-        agent = PPO(predictor, len(codes) + 1, int(window_length), len(features), '-'.join(agent_config), reload_flag,trainable)
 
     stocktrader=StockTrader()
 
